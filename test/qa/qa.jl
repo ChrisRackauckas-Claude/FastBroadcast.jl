@@ -1,5 +1,10 @@
 using SciMLTesting, FastBroadcast, Test
 
+# ExplicitImports only sees an extension module once its trigger package is loaded, so
+# load every weakdep here to bring FastBroadcastPolyesterExt and FastBroadcastStaticExt
+# into the set of scanned submodules.
+using Polyester, Static
+
 # ExplicitImports ignore-lists (per-check, keyed by check short name). Every entry is
 # a non-public name of a dependency that FastBroadcast must use and that has no public
 # alias, so it cannot be FIXed:
@@ -13,11 +18,16 @@ using SciMLTesting, FastBroadcast, Test
 #     supported Julia versions).
 #   * ArrayInterface `indices_do_not_alias`/`flatten_tuples` are non-public in ArrayInterface
 #     (confirmed: not exported, not `public`-declared) with no public replacement.
+#   * FastBroadcast's own `fast_materialize`/`fast_materialize!`/`fast_materialize_threaded`/
+#     `fast_materialize_threaded!`/`_view` are the internal hooks its extensions exist to
+#     add methods to. An extension has no public spelling for the parent's dispatch points,
+#     so these stay ignored rather than being promoted to public API.
 const EI_KWARGS = (;
     all_explicit_imports_are_public = (;
         ignore = (
             :Broadcasted, :materialize, :materialize!,
             :flatten_tuples, :indices_do_not_alias, :Fix1,
+            :_view, :fast_materialize, :fast_materialize!,
         ),
     ),
     all_qualified_accesses_are_public = (;
@@ -27,6 +37,7 @@ const EI_KWARGS = (;
             :Experimental, :RefValue, :Slice, :broadcasted,
             :check_broadcast_shape, :combine_eltypes, :front,
             :get_extension, :maybeview, :register_error_hint, :tail,
+            :fast_materialize_threaded, :fast_materialize_threaded!,
         ),
     ),
 )
