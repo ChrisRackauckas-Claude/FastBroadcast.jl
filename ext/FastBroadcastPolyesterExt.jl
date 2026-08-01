@@ -2,7 +2,7 @@ module FastBroadcastPolyesterExt
 
 using FastBroadcast: FastBroadcast, Serial, fast_materialize!, _view
 using Base.Broadcast: Broadcasted, materialize
-using Polyester
+using Polyester: batch
 
 @inline function _batch_broadcast_fn(tup, start, stop)
     (dest, ldstaxes, bcobj, VN) = tup
@@ -29,7 +29,7 @@ end
 function FastBroadcast.fast_materialize_threaded!(dst, bc::Broadcasted)
     dstaxes = axes(dst)
     last_dstaxes = dstaxes[end]
-    Polyester.batch(
+    batch(
         _batch_broadcast_fn,
         (length(last_dstaxes), Threads.nthreads()),
         dst,
