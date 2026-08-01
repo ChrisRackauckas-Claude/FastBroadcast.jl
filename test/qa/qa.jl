@@ -42,6 +42,14 @@ const EI_KWARGS = (;
     ),
 )
 
+# ExplicitImports silently skips an extension that fails to load, so assert the
+# extension modules actually exist rather than trusting a green run_qa.
+@testset "Extensions loaded" begin
+    for ext in (:FastBroadcastPolyesterExt, :FastBroadcastStaticExt)
+        @test Base.get_extension(FastBroadcast, ext) !== nothing
+    end
+end
+
 @testset "Aqua + ExplicitImports" begin
     run_qa(
         FastBroadcast;
