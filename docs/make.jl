@@ -5,7 +5,6 @@ makedocs(
     authors = "Yingbo Ma, Chris Elrod, and contributors",
     modules = [FastBroadcast],
     clean = true,
-    doctest = false,
     linkcheck = false,
     checkdocs = :exports,
     format = Documenter.HTML(
