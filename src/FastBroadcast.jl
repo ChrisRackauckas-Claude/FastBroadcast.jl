@@ -562,4 +562,17 @@ let # we could check `hasfield(Method, :recursion_relation)`, but I'd rather see
     end
 end
 
+using PrecompileTools: @compile_workload, @setup_workload
+
+@setup_workload begin
+    @compile_workload begin
+        source = [1.0, 2.0, 3.0]
+        destination = similar(source)
+        @.. destination = source + 1
+        @.. thread = Serial() destination = 2source + 1
+        result = @.. source + 1
+        result
+    end
+end
+
 end
